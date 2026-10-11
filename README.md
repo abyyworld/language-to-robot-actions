@@ -21,7 +21,7 @@ Its first plan comes from the synthetic test planner, not an LLM (see below).
 
 | | Status |
 |---|---|
-| Simulator, skills, verifier, executor, task suite, harness, statistics | Built and tested (`pytest`: 98 tests) |
+| Simulator, skills, verifier, executor, task suite, harness, statistics | Built and tested (`pytest`: 100 tests) |
 | **Execution ceiling**: a correct plan succeeds in simulation | **300 / 300** episodes, 95% CI [98.7%, 100%] ([report](results/report.md)) |
 | Pipeline check with a synthetic planner (verifier off / symbolic / twin) | Done: see [Pipeline check](#pipeline-check-synthetic-planner) |
 | **LLM results** (verifier effect, model and prompt comparisons, which instructions break LLMs) | **Not run yet.** These need an API key. The commands are in [Running the experiments](#running-the-experiments) |
@@ -106,7 +106,35 @@ time. It reads the ground truth, so **its numbers only show that the
 machinery works**: the verifier catches what it should, the repair loop runs,
 and the statistics resolve a large effect. They say nothing about LLMs.
 
-<!-- PIPELINE_CHECK -->
+All four runs are in [`results/report.md`](results/report.md) and their
+per-episode records in `runs/core_v1/`.
+
+| Synthetic planner `noisy:0.5` | Success (95% CI) | vs. verifier off |
+|---|---|---|
+| Verifier off | 48% [43%, 54%] | |
+| Verifier `symbolic`, 2 repair rounds | 81% [77%, 85%] | **+33.0 points** [+26, +40], 99 wins / 0 losses, `BETTER` |
+| Verifier `twin` | 81% [77%, 85%] | identical to `symbolic` |
+| Oracle (execution ceiling) | 100% [99%, 100%] | |
+
+What this confirms about the machinery, and nothing more:
+
+- The verifier rejected 108 of 300 first drafts, mostly unknown ids (40), points
+  off the table (32) and placing with an empty hand (23). Of those, 97 were
+  repaired. With the verifier off, the same mistakes surfaced during execution:
+  62 episodes stopped at a step that could not be attempted, 39 at a step that
+  failed physically, and on 7 impossible tasks the robot moved blocks anyway.
+- 20 episodes end `goal_not_met` under every setting. Those are wrong-object
+  plans: valid and executable, but not what was asked. The verifier passes them
+  by design, because it does not know the goal.
+- `twin` adds nothing here because every injected mistake breaks a symbolic
+  rule. With an LLM, the cases worth checking are plans that pass the symbolic
+  rules and still fail physically.
+- 0 losses is an artefact of the setup. Both arms get an identical first draft,
+  so feedback can only help. With an LLM the verifier can also cost episodes,
+  by rejecting a plan that would have worked and then failing the repair. That
+  is part of what the real experiment measures.
+
+![Success by category, synthetic planner and oracle](results/report.png)
 
 ## Running the experiments
 
@@ -115,7 +143,7 @@ git clone https://github.com/abyyworld/language-to-robot-actions
 cd language-to-robot-actions
 pip install -e ".[anthropic,viz,dev]"     # Python >= 3.10
 lang2act assets                           # pinned Franka Panda meshes, ~33 MB
-pytest                                    # ~4 min
+pytest                                    # ~15 s
 ```
 
 The finding the project is built for is **how much the verifier improves

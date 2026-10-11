@@ -166,7 +166,9 @@ def wilson_interval(successes: int, n: int, alpha: float = 0.05) -> Interval:
     denom = 1 + z**2 / n
     centre = (p + z**2 / (2 * n)) / denom
     half = z * np.sqrt(p * (1 - p) / n + z**2 / (4 * n**2)) / denom
-    return Interval(p, max(0.0, centre - half), min(1.0, centre + half))
+    # Clamp around the point: at p = 0 or 1, rounding can otherwise leave the
+    # bound a hair on the wrong side of the estimate.
+    return Interval(p, min(p, max(0.0, centre - half)), max(p, min(1.0, centre + half)))
 
 
 def paired_cluster_bootstrap_diff(

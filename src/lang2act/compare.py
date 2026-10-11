@@ -34,7 +34,14 @@ from typing import Literal
 import numpy as np
 
 from .harness import Run
-from .stats import holm, mcnemar_exact, paired_cluster_bootstrap_diff, required_pairs
+from .stats import (
+    Interval,
+    holm,
+    mcnemar_exact,
+    paired_bootstrap_diff,
+    paired_cluster_bootstrap_diff,
+    required_pairs,
+)
 
 Verdict = Literal["BETTER", "WORSE", "EQUIVALENT", "UNDERPOWERED"]
 
@@ -104,9 +111,14 @@ def _row(
     p_adjusted: float | None = None,
     n_boot: int = 10_000,
 ) -> Row:
-    ci = paired_cluster_bootstrap_diff(
+    clustered = paired_cluster_bootstrap_diff(
         b.astype(float), c.astype(float), clusters, n_samples=n_boot, alpha=alpha
     )
+    flat = paired_bootstrap_diff(b.astype(float), c.astype(float), n_samples=n_boot, alpha=alpha)
+    # Clustering exists to widen the interval for correlated seeds. With a
+    # handful of templates whose differences happen to agree, it can instead
+    # collapse to zero width, so never report it narrower than the per-episode one.
+    ci = Interval(clustered.point, min(clustered.low, flat.low), max(clustered.high, flat.high))
     wins, losses, p = mcnemar_exact(b, c)
     p_use = p if p_adjusted is None else p_adjusted
     verdict = _verdict(ci.low, ci.high, p_use, alpha, margin)

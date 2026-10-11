@@ -83,3 +83,12 @@ def test_refuses_unpaired_suites():
     base = {k: True for k in keys()}
     with pytest.raises(ValueError, match="different suites"):
         compare_runs(make_run("a", base), make_run("b", base, suite=other))
+
+
+def test_interval_never_collapses_with_few_agreeing_templates():
+    """Three templates with identical differences: the cluster bootstrap alone gives zero width."""
+    base = {k: True for k in keys()}
+    cand = {k: (k[1] % 10 != 0) for k in keys()}  # every template loses 2 of 20
+    cmp = compare_runs(make_run("a", base), make_run("b", cand), n_boot=2000)
+    row = cmp.overall
+    assert row.ci_high - row.ci_low > 0.02

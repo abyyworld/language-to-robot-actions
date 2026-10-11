@@ -139,6 +139,13 @@ def test_wilson_interval_is_not_degenerate_at_the_edges():
     assert zero.low == 0.0 and 0.1 < zero.high < 0.15
 
 
+def test_wilson_bounds_always_contain_the_point():
+    for n in (1, 7, 30, 300):
+        for k in (0, n // 3, n):
+            ci = wilson_interval(k, n)
+            assert ci.low <= ci.point <= ci.high
+
+
 def test_wilson_matches_a_known_value():
     # 8/10 at 95%: [0.490, 0.943] (Wilson 1927; any standard table).
     ci = wilson_interval(8, 10)

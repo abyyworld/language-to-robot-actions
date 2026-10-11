@@ -1,0 +1,64 @@
+{
+  "label": "oracle-symbolic",
+  "suite": {
+    "name": "core_v1",
+    "seed_base": 0,
+    "seeds_per_template": 10,
+    "templates": [
+      "bowl_one",
+      "bowl_one_synonym",
+      "stack_two",
+      "stack_two_synonym",
+      "bowl_then_stack",
+      "two_in_bowl",
+      "tower_three",
+      "tower_four",
+      "swap_stack",
+      "clear_then_bowl",
+      "clear_then_stack",
+      "unstack_all",
+      "left_of",
+      "right_of",
+      "in_front_of",
+      "behind",
+      "between",
+      "leftmost_to_bowl",
+      "closest_to_bowl",
+      "rightmost_on",
+      "count_two_bowl",
+      "count_three_bowl",
+      "all_color_bowl",
+      "all_except",
+      "count_color_two",
+      "stack_three_any",
+      "missing_color",
+      "unreachable_block",
+      "no_bowl",
+      "move_bowl"
+    ]
+  },
+  "condition": {
+    "planner": "oracle",
+    "verifier": "symbolic",
+    "max_repairs": 2,
+    "prompt": "basic",
+    "effort": "medium",
+    "structured": true,
+    "sample": 0
+  },
+  "planner": {
+    "name": "oracle"
+  },
+  "categories": [
+    "simple",
+    "multi_step",
+    "precondition",
+    "spatial",
+    "counting",
+    "infeasible"
+  ],
+  "lang2act_version": "0.1.0",
+  "git_sha": null,
+  "python": "3.13.16",
+  "started_at": "2026-10-11T16:51:52+00:00"
+}

@@ -1,0 +1,33 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install -e ".[anthropic,dev]"
+      - name: Cache Panda meshes
+        uses: actions/cache@v4
+        with:
+          path: src/lang2act/sim/assets/menagerie
+          key: menagerie-${{ hashFiles('src/lang2act/sim/assets/fetch.py') }}
+      - name: Fetch Panda meshes
+        run: lang2act assets
+      - name: Lint
+        run: ruff check src tests
+      - name: Tests
+        run: pytest
+      # The suite must stay solvable: a correct plan has to succeed every time,
+      # or LLM failures cannot be told apart from motion failures.
+      - name: Execution ceiling (smoke suite)
+        run: |
+          lang2act run --suite suites/smoke.yaml --planner oracle --out /tmp/smoke --workers 2
+          python -c "import json; r=[json.loads(l) for l in open('/tmp/smoke/episodes.jsonl')]; bad=[(x['template'],x['seed'],x['stage']) for x in r if not x['success']]; assert not bad, bad; print(len(r), 'episodes, all solved')"

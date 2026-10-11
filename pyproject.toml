@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lang2act"
+version = "0.1.0"
+description = "LLM planners that turn instructions into robot action plans, checked before and after they run in MuJoCo, with a paired evaluation harness"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "abyyworld" }]
+keywords = ["robotics", "llm", "planning", "mujoco", "evaluation", "embodied-ai"]
+dependencies = [
+    "mujoco>=3.2",
+    "numpy>=1.24",
+    "pydantic>=2.5",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+# The Claude planner. Local models (Ollama) need nothing extra.
+anthropic = ["anthropic>=1.0"]
+viz = ["matplotlib>=3.7", "imageio>=2.31"]
+dev = ["pytest>=7.4", "ruff>=0.4"]
+
+[project.scripts]
+lang2act = "lang2act.cli:main"
+
+[project.urls]
+Repository = "https://github.com/abyyworld/language-to-robot-actions"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+lang2act = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
+markers = ["sim: needs the Franka Panda meshes (make assets)"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501", "SIM108", "B905"]

@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Vendored robot meshes (fetched by `make assets`, pinned in fetch.py)
+src/lang2act/sim/assets/menagerie/
+
+# Run outputs. Runs on the versioned suites are committed: they are the
+# evidence behind every number in results/.
+runs/*
+!runs/core_v1/
+data/
+outputs/
+*.ckpt
+*.pt
+wandb/
+
+# OS
+.DS_Store
+
+# LLM response cache (reproducible reruns; delete to resample)
+.cache/

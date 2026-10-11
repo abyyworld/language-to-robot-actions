@@ -1,0 +1,15 @@
+# Core suite v1: every template, 10 seeds each = 300 episodes per condition.
+#
+# Versioned as a file and never edited in place. Changing the template list or
+# the seeds silently invalidates every earlier comparison; add core_v2.yaml
+# instead so old results stay interpretable.
+#
+# What 300 paired episodes can resolve: with planners that disagree on ~20% of
+# episodes, roughly an 8-point difference at 80% power overall. Per category
+# (40-80 episodes) only large differences resolve; smaller ones come back
+# UNDERPOWERED rather than being reported as findings.
+
+name: core_v1
+seed_base: 0
+seeds_per_template: 10
+templates: all

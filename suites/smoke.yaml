@@ -1,0 +1,5 @@
+# Two seeds per template: a quick end-to-end check, not an experiment.
+name: smoke
+seed_base: 1000
+seeds_per_template: 2
+templates: all
